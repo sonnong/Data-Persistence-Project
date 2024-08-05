@@ -10,11 +10,12 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
-    public Text ScoreText;
+    public Text ScoreText, HighScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
+    public static int BestScore;
     
     private bool m_GameOver = false;
 
@@ -66,6 +67,7 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+        HighScoreText.text = $"Best Score: {MainMenu.PlayerName}: {m_Points}";
     }
 
     public void GameOver()
