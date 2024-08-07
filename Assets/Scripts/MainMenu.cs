@@ -2,15 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    public static MainMenu Instance;
     public TMP_InputField NameInput;
-    public static string PlayerName;
-    public static int BestScore;
+    public TextMeshProUGUI MenuBestScore;
+    public string PlayerName, BestPlayer;
+    public int BestScore;
 
     class HighScore
     {
@@ -20,7 +25,15 @@ public class MainMenu : MonoBehaviour
 
     void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        BestPlayer = LoadScore().Player;
         BestScore = LoadScore().Score;
+        MenuBestScore.text = $"Best Score: {BestPlayer}: {BestScore}";
     }
 
     public void StartNew()
@@ -29,10 +42,10 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
-    void SaveScore()
+    public void SaveScore()
     {
         HighScore data = new();
-        data.Player = PlayerName;
+        data.Player = BestPlayer;
         data.Score = BestScore;
         string json = JsonUtility.ToJson(data);
         File.WriteAllText(Application.persistentDataPath + "/highscore.json", json);
@@ -49,6 +62,15 @@ public class MainMenu : MonoBehaviour
         }
 
         return data;
+    }
+
+    public void Exit()
+    {
+        # if UNITY_EDITOR
+            EditorApplication.ExitPlaymode();
+        # else
+            Application.Quit();
+        # endif
     } 
 
 }
